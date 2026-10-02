@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "vehicule")
@@ -26,4 +28,25 @@ public class Vehicule {
     private CategorieVehicule categorie;
     private BigDecimal tarifJournalier;
     private StatutVehicule statut;
+    // Un véhicule appartient à une seule agence
+    @ManyToOne
+    @JoinColumn(name = "agence_id")
+    private Agence agence;
+
+    // Un véhicule peut être réservé plusieurs fois
+    @OneToMany(mappedBy = "vehicule")
+    private List<Reservation> reservations = new ArrayList<>();
+
+    // Un véhicule peut avoir plusieurs maintenances
+    @OneToMany(mappedBy = "vehicule", cascade = CascadeType.ALL)
+    private List<Maintenance> maintenances = new ArrayList<>();
+
+    // Many-to-many avec Equipement (Vehicule = côté propriétaire)
+    @ManyToMany
+    @JoinTable(
+            name = "vehicule_equipements",
+            joinColumns = @JoinColumn(name = "vehicule_id"),
+            inverseJoinColumns = @JoinColumn(name = "equipement_id")
+    )
+    private List<Equipement> equipements = new ArrayList<>();
 }

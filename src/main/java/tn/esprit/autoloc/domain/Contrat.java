@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "contrat")
@@ -29,4 +31,11 @@ public class Contrat {
 
     private boolean valide = false;
 
+    // Relation inverse avec Reservation
+    @OneToOne(mappedBy = "contrat")
+    private Reservation reservation;
+
+    // Un contrat peut avoir plusieurs paiements (composition → cascade + orphanRemoval)
+    @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Paiement> paiements = new ArrayList<>();
 }
