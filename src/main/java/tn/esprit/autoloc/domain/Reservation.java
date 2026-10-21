@@ -31,15 +31,68 @@ public class Reservation {
     private StatutReservation statut;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "vehicule_id")
     private Vehicule vehicule;
 
-    // Une réservation génère un seul contrat (Reservation = côté propriétaire)
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contrat_id")
     private Contrat contrat;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(LocalDate dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(LocalDate dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    public StatutReservation getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutReservation statut) {
+        this.statut = statut;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Vehicule getVehicule() {
+        return vehicule;
+    }
+
+    public void setVehicule(Vehicule vehicule) {
+        this.vehicule = vehicule;
+    }
+
+    public Contrat getContrat() {
+        return contrat;
+    }
+
+    public void setContrat(Contrat contrat) {
+        this.contrat = contrat;
+    }
 }

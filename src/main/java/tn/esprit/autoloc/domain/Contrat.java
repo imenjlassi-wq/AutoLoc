@@ -31,11 +31,59 @@ public class Contrat {
 
     private boolean valide = false;
 
-    // Relation inverse avec Reservation
+
     @OneToOne(mappedBy = "contrat")
     private Reservation reservation;
 
-    // Un contrat peut avoir plusieurs paiements (composition → cascade + orphanRemoval)
+
     @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Paiement> paiements = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getDateSignature() {
+        return dateSignature;
+    }
+
+    public void setDateSignature(LocalDate dateSignature) {
+        this.dateSignature = dateSignature;
+    }
+
+    public BigDecimal getMontantTotal() {
+        return montantTotal;
+    }
+
+    public void setMontantTotal(BigDecimal montantTotal) {
+        this.montantTotal = montantTotal;
+    }
+
+    public boolean isValide() {
+        return valide;
+    }
+
+    public void setValide(boolean valide) {
+        this.valide = valide;
+    }
+
+    public List<Paiement> getPaiements() {
+        return paiements;
+    }
+
+    public void setPaiements(List<Paiement> paiements) {
+        this.paiements = paiements;
+    }
+
+    public Reservation getReservation() {
+        return reservation;
+    }
+
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
+    }
 }

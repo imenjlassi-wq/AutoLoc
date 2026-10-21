@@ -30,8 +30,47 @@ public class Paiement {
     @Enumerated(EnumType.STRING)
     private ModePaiement modePaiement;
 
-    // Relation inverse avec Contrat
+
     @ManyToOne
-    @JoinColumn(name = "contrat_id")
     private Contrat contrat;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getMontant() {
+        return montant;
+    }
+
+    public void setMontant(BigDecimal montant) {
+        this.montant = montant;
+    }
+
+    public LocalDate getDatePaiement() {
+        return datePaiement;
+    }
+
+    public void setDatePaiement(LocalDate datePaiement) {
+        this.datePaiement = datePaiement;
+    }
+
+    public ModePaiement getModePaiement() {
+        return modePaiement;
+    }
+
+    public void setModePaiement(ModePaiement modePaiement) {
+        this.modePaiement = modePaiement;
+    }
+
+    public Contrat getContrat() {
+        return contrat;
+    }
+
+    public void setContrat(Contrat contrat) {
+        this.contrat = contrat;
+    }
 }

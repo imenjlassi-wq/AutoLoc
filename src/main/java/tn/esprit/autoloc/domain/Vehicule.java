@@ -28,20 +28,20 @@ public class Vehicule {
     private CategorieVehicule categorie;
     private BigDecimal tarifJournalier;
     private StatutVehicule statut;
-    // Un véhicule appartient à une seule agence
+
     @ManyToOne
     @JoinColumn(name = "agence_id")
     private Agence agence;
 
-    // Un véhicule peut être réservé plusieurs fois
+
     @OneToMany(mappedBy = "vehicule")
     private List<Reservation> reservations = new ArrayList<>();
 
-    // Un véhicule peut avoir plusieurs maintenances
+
     @OneToMany(mappedBy = "vehicule", cascade = CascadeType.ALL)
     private List<Maintenance> maintenances = new ArrayList<>();
 
-    // Many-to-many avec Equipement (Vehicule = côté propriétaire)
+
     @ManyToMany
     @JoinTable(
             name = "vehicule_equipements",
@@ -49,4 +49,93 @@ public class Vehicule {
             inverseJoinColumns = @JoinColumn(name = "equipement_id")
     )
     private List<Equipement> equipements = new ArrayList<>();
+
+    public Long getId() {
+        return idVehicule;
+    }
+
+    public void setId(Long idVehicule) {
+        this.idVehicule = idVehicule;
+    }
+
+    public String getImmatriculation() {
+        return immatriculation;
+    }
+
+    public void setImmatriculation(String immatriculation) {
+        this.immatriculation = immatriculation;
+    }
+
+    public String getMarque() {
+        return marque;
+    }
+
+    public void setMarque(String marque) {
+        this.marque = marque;
+    }
+
+    public BigDecimal getTarifJournalier() {
+        return tarifJournalier;
+    }
+
+    public void setTarifJournalier(BigDecimal tarifJournalier) {
+        this.tarifJournalier = tarifJournalier;
+    }
+
+    public String getModele() {
+        return modele;
+    }
+
+    public void setModele(String modele) {
+        this.modele = modele;
+    }
+
+    public CategorieVehicule getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(CategorieVehicule categorie) {
+        this.categorie = categorie;
+    }
+
+    public StatutVehicule getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutVehicule statut) {
+        this.statut = statut;
+    }
+
+    public Agence getAgence() {
+        return agence;
+    }
+
+    public void setAgence(Agence agence) {
+        this.agence = agence;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public List<Maintenance> getMaintenances() {
+        return maintenances;
+    }
+
+    public void setMaintenances(List<Maintenance> maintenances) {
+        this.maintenances = maintenances;
+    }
+
+    public List<Equipement> getEquipements() {
+        return equipements;
+    }
+
+    public void setEquipements(List<Equipement> equipements) {
+        this.equipements = equipements;
+    }
+
 }
