@@ -43,15 +43,22 @@ public class AgenceServiceImpl implements IAgenceService {
         return agenceRepository.count();
     }
 
+
     @Override
     public Agence update(Long id, Agence agence) {
+        // 1. Récupérer l'agence existante à partir de son ID
         Agence existante = findById(id);
 
-        // Ajouter ici la mise à jour des attributs
-        // selon les champs de l'entité Agence.
+        // 2. Modifier ses attributs avec les nouvelles valeurs
+        existante.setNom(agence.getNom());
+        existante.setVille(agence.getVille());
+        existante.setAdresse(agence.getAdresse());
+        existante.setTelephone(agence.getTelephone());
 
+        // 3. Enregistrer les modifications dans la base de données
         return agenceRepository.save(existante);
     }
+
 
     @Override
     public void deleteById(Long id) {

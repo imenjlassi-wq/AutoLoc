@@ -37,14 +37,23 @@ public class VehiculeServiceImpl implements IVehiculeService {
         return vehiculeRepository.findAll();
     }
 
+
     @Override
     public Vehicule update(Long id, Vehicule vehicule) {
         Vehicule existant = findById(id);
 
-        // Ajouter ici les attributs modifiables du véhicule.
+        existant.setImmatriculation(vehicule.getImmatriculation());
+        existant.setMarque(vehicule.getMarque());
+        existant.setModele(vehicule.getModele());
+        existant.setCategorie(vehicule.getCategorie());
+        existant.setTarifJournalier(vehicule.getTarifJournalier());
+        existant.setStatut(vehicule.getStatut());
+        existant.setAgence(vehicule.getAgence());
+        existant.setEquipements(vehicule.getEquipements());
 
         return vehiculeRepository.save(existant);
     }
+
 
     @Override
     public void deleteById(Long id) {

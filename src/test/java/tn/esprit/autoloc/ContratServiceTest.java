@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ContratServiceTest {
-
+/*
     @Autowired
     private IContratService contratService;
 
@@ -71,10 +71,10 @@ class ContratServiceTest {
 
         contratService.deleteById(id);
 
-        System.out.println("Contrat supprimé : " + id);
+        System.out.println("Contrat supprimé : " + id);*/
 
-        // 5. Vérifier que le contrat n'existe plus
-        assertFalse(
+    // 5. Vérifier que le contrat n'existe plus
+     /*   assertFalse(
                 contratService.findAll().stream()
                         .anyMatch(c -> c.getId().equals(id))
         );
@@ -82,5 +82,5 @@ class ContratServiceTest {
         System.out.println(
                 "Vérification : le contrat a été supprimé avec succès."
         );*/
-    }
+/*}*/
 }

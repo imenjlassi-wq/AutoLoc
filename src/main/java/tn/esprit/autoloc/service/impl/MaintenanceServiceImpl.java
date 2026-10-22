@@ -38,14 +38,22 @@ public class MaintenanceServiceImpl implements IMaintenanceService {
         return maintenanceRepository.findAll();
     }
 
+
     @Override
     public Maintenance update(Long id, Maintenance maintenance) {
+        // Récupérer la maintenance existante
         Maintenance existante = findById(id);
 
-        // Ajouter ici les attributs modifiables de la maintenance.
+        // Modifier les attributs
+        existante.setDateDebut(maintenance.getDateDebut());
+        existante.setDateFin(maintenance.getDateFin());
+        existante.setDescription(maintenance.getDescription());
+        existante.setVehicule(maintenance.getVehicule());
 
+        // Enregistrer les modifications
         return maintenanceRepository.save(existante);
     }
+
 
     @Override
     public void deleteById(Long id) {

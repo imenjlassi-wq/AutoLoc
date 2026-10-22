@@ -38,14 +38,19 @@ public class EquipementServiceImpl implements IEquipementService {
         return equipementRepository.findAll();
     }
 
+
     @Override
     public Equipement update(Long id, Equipement equipement) {
+        // Rechercher l'équipement existant
         Equipement existant = findById(id);
 
-        // Ajouter ici les attributs modifiables de l'équipement.
+        // Modifier son libellé
+        existant.setLibelle(equipement.getLibelle());
 
+        // Enregistrer les modifications
         return equipementRepository.save(existant);
     }
+
 
     @Override
     public void deleteById(Long id) {

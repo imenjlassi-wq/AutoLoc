@@ -39,15 +39,22 @@ public class EmployeServiceImpl implements IEmployeService {
         return employeRepository.findAll();
     }
 
+
     @Override
     public Employe update(Long id, Employe employe) {
+        // 1. Rechercher l'employé existant
         Employe existant = findById(id);
 
-        // Ajouter ici les attributs modifiables de l'employé.
-        // Ne pas modifier l'identifiant ni les collections associées.
+        // 2. Modifier les attributs
+        existant.setNom(employe.getNom());
+        existant.setPrenom(employe.getPrenom());
+        existant.setRole(employe.getRole());
+        existant.setAgence(employe.getAgence());
 
+        // 3. Enregistrer les modifications
         return employeRepository.save(existant);
     }
+
 
     @Override
     public void deleteById(Long id) {

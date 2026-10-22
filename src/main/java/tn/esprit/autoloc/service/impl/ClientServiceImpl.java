@@ -39,15 +39,24 @@ public class ClientServiceImpl implements IClientService {
         return clientRepository.findAll();
     }
 
+
     @Override
     public Client update(Long id, Client client) {
+        // 1. Rechercher le client existant dans la base
         Client existant = findById(id);
 
-        // Recopier ici les autres attributs modifiables du client,
-        // sans toucher à l'identifiant ni aux collections associées.
+        // 2. Mettre à jour ses attributs
+        existant.setNom(client.getNom());
+        existant.setPrenom(client.getPrenom());
+        existant.setEmail(client.getEmail());
+        existant.setTelephone(client.getTelephone());
+        existant.setNumPermis(client.getNumPermis());
+        existant.setDateInscription(client.getDateInscription());
 
+        // 3. Enregistrer les modifications
         return clientRepository.save(existant);
     }
+
 
     @Override
     public void deleteById(Long id) {
