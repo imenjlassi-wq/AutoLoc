@@ -1,22 +1,30 @@
 package tn.esprit.autoloc.service.impl;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.domain.Reservation;
+import tn.esprit.autoloc.domain.enums.StatutReservation;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.observer.ReservationSubject;
 import tn.esprit.autoloc.repository.IReservationRepository;
 import tn.esprit.autoloc.service.IReservationService;
 
+import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationServiceImpl implements IReservationService {
 
-    @Autowired
-    private IReservationRepository reservationRepository;
+
+    private final IReservationRepository reservationRepository;
+
+
 
     @Override
     public Reservation create(Reservation reservation) {
@@ -61,4 +69,45 @@ public class ReservationServiceImpl implements IReservationService {
         }
         reservationRepository.deleteById(id);
     }
+
+
+    private final ReservationSubject reservationSubject;
+
+
+
+    // OBSERVER : Création d'une réservation
+    public Reservation creerReservation(Client client) {
+
+        Reservation reservation = new Reservation();
+
+        reservation.setClient(client);
+        reservation.setDateDebut(LocalDate.now());
+        reservation.setStatut(StatutReservation.CONFIRMEE);
+
+        // Sauvegarder la réservation
+        reservation = reservationRepository.save(reservation);
+
+        // Notifier les observateurs
+        reservationSubject.notifierConfirmation(reservation);
+
+        return reservation;
+    }
+
+    // OBSERVER : Annulation d'une réservation
+    public Reservation annulerReservation(Reservation reservation) {
+
+        reservation.setStatut(StatutReservation.ANNULEE);
+
+        reservation = reservationRepository.save(reservation);
+
+        log.info("Reservation #{} annulée pour le client {}",
+                reservation.getId(),
+                reservation.getClient().getEmail());
+
+        reservationSubject.notifierAnnulation(reservation);
+
+        return reservation;
+    }
+
+
 }

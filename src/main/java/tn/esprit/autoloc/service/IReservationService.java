@@ -1,5 +1,6 @@
 package tn.esprit.autoloc.service;
 
+import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.domain.Paiement;
 import tn.esprit.autoloc.domain.Reservation;
 
@@ -11,4 +12,5 @@ public interface IReservationService {
     List<Reservation> findAll();
     Reservation update(Long id, Reservation reservation);
     void deleteById(Long id);
+    Reservation creerReservation(Client client);
 }

@@ -44,8 +44,9 @@ public class PaiementServiceImpl implements IPaiementService {
     public Paiement update(Long id, Paiement paiement) {
         Paiement existant = findById(id);
 
-        // Ajouter ici les attributs modifiables du paiement.
-        // Ne pas modifier l'identifiant ni les relations sans nécessité.
+        existant.setMontant(paiement.getMontant());
+        existant.setDatePaiement(paiement.getDatePaiement());
+        existant.setModePaiement(paiement.getModePaiement());
 
         return paiementRepository.save(existant);
     }
