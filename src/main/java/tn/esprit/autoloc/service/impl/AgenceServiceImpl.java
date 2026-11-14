@@ -10,32 +10,48 @@ import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.repository.IAgenceRepository;
 import tn.esprit.autoloc.service.IAgenceService;
+import tn.esprit.autoloc.web.dto.AgenceDTO;
+import tn.esprit.autoloc.web.mapper.AgenceMapper;
 
 @Service
 @RequiredArgsConstructor
 public class AgenceServiceImpl implements IAgenceService {
 
     private final IAgenceRepository agenceRepository;
+    private final AgenceMapper agenceMapper;
 
     @Override
-    public Agence create(Agence agence) {
-        if (agence.getId() != null) {
+    public AgenceDTO create(AgenceDTO dto) {
+
+        if (dto.getId() != null) {
             throw new IllegalArgumentException(
                     "Une nouvelle agence ne doit pas avoir d'identifiant"
             );
         }
-        return agenceRepository.save(agence);
+
+        Agence agence = agenceMapper.toEntity(dto);
+
+        Agence agenceSaved = agenceRepository.save(agence);
+
+        return agenceMapper.toDto(agenceSaved);
     }
 
     @Override
-    public Agence findById(Long id) {
-        return agenceRepository.findById(id)
+    public AgenceDTO findById(Long id) {
+
+        Agence agence = agenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agence", id));
+
+        return agenceMapper.toDto(agence);
     }
 
     @Override
-    public List<Agence> findAll() {
-        return agenceRepository.findAll();
+    public List<AgenceDTO> findAll() {
+
+        return agenceRepository.findAll()
+                .stream()
+                .map(agenceMapper::toDto)
+                .toList();
     }
 
     @Override
@@ -43,28 +59,29 @@ public class AgenceServiceImpl implements IAgenceService {
         return agenceRepository.count();
     }
 
-
     @Override
-    public Agence update(Long id, Agence agence) {
-        // 1. Récupérer l'agence existante à partir de son ID
-        Agence existante = findById(id);
+    public AgenceDTO update(Long id, AgenceDTO dto) {
 
-        // 2. Modifier ses attributs avec les nouvelles valeurs
-        existante.setNom(agence.getNom());
-        existante.setVille(agence.getVille());
-        existante.setAdresse(agence.getAdresse());
-        existante.setTelephone(agence.getTelephone());
+        Agence existante = agenceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agence", id));
 
-        // 3. Enregistrer les modifications dans la base de données
-        return agenceRepository.save(existante);
+        existante.setNom(dto.getNom());
+        existante.setVille(dto.getVille());
+        existante.setAdresse(dto.getAdresse());
+        existante.setTelephone(dto.getTelephone());
+
+        Agence agenceUpdated = agenceRepository.save(existante);
+
+        return agenceMapper.toDto(agenceUpdated);
     }
-
 
     @Override
     public void deleteById(Long id) {
+
         if (!agenceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Agence", id);
         }
+
         agenceRepository.deleteById(id);
     }
 }

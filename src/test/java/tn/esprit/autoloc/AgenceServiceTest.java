@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.service.IAgenceService;
+import tn.esprit.autoloc.web.dto.AgenceDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,13 +20,13 @@ class AgenceServiceTest {
     void testAgenceService() {
 
         // 1. CREATE
-        Agence agence = new Agence();
+        AgenceDTO agence = new AgenceDTO();
         agence.setAdresse("Avenue Habib Bourguiba");
         agence.setNom("Agence Test");
         agence.setTelephone("22123456");
         agence.setVille("Tunis");
 
-        Agence agenceEnregistree = agenceService.create(agence);
+        AgenceDTO agenceEnregistree = agenceService.create(agence);
 
         assertNotNull(agenceEnregistree);
         assertNotNull(agenceEnregistree.getId());
@@ -38,6 +38,7 @@ class AgenceServiceTest {
 
         // 2. FIND ALL
         System.out.println("===== FIND ALL =====");
+
         agenceService.findAll().forEach(System.out::println);
 
         assertTrue(
@@ -47,14 +48,27 @@ class AgenceServiceTest {
 
         // 3. FIND BY ID
         System.out.println("===== FIND BY ID =====");
-        Agence agenceRecuperee = agenceService.findById(id);
+
+        AgenceDTO agenceRecuperee = agenceService.findById(id);
 
         assertNotNull(agenceRecuperee);
         assertEquals(id, agenceRecuperee.getId());
 
         System.out.println(agenceRecuperee);
 
-        // 4. COUNT
+        // 4. UPDATE
+        agence.setNom("Agence Test Modifiée");
+        agence.setVille("Sousse");
+
+        AgenceDTO agenceModifiee = agenceService.update(id, agence);
+
+        assertEquals("Agence Test Modifiée", agenceModifiee.getNom());
+        assertEquals("Sousse", agenceModifiee.getVille());
+
+        System.out.println("===== UPDATE =====");
+        System.out.println(agenceModifiee);
+
+        // 5. COUNT
         long nombreAgences = agenceService.count();
 
         System.out.println("===== COUNT =====");
@@ -62,13 +76,13 @@ class AgenceServiceTest {
 
         assertTrue(nombreAgences > 0);
 
-        // 5. DELETE
+        // 6. DELETE
         agenceService.deleteById(id);
 
         System.out.println("===== DELETE =====");
         System.out.println("Agence supprimée : " + id);
 
-        // 6. Vérifier que l'agence n'existe plus
+        // 7. Vérifier que l'agence n'existe plus
         assertFalse(
                 agenceService.findAll().stream()
                         .anyMatch(a -> a.getId().equals(id))

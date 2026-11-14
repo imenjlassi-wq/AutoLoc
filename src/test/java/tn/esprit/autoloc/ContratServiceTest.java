@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.service.IContratService;
+import tn.esprit.autoloc.web.dto.ContratDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,21 +15,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ContratServiceTest {
-/*
+
     @Autowired
     private IContratService contratService;
 
     @Test
     void testContratService() {
 
-        // 1. CREATE : créer un contrat
-        Contrat contrat = new Contrat();
+        // 1. CREATE
+        ContratDTO contrat = new ContratDTO();
 
         contrat.setDateSignature(LocalDate.now());
         contrat.setMontantTotal(new BigDecimal("150.00"));
         contrat.setValide(true);
 
-        Contrat contratEnregistre = contratService.create(contrat);
+        ContratDTO contratEnregistre = contratService.create(contrat);
 
         assertNotNull(contratEnregistre);
         assertNotNull(contratEnregistre.getId());
@@ -39,20 +39,18 @@ class ContratServiceTest {
         System.out.println("===== CREATE =====");
         System.out.println(contratEnregistre);
 
-        // 2. FIND ALL : afficher tous les contrats
+        // 2. FIND ALL
         System.out.println("===== FIND ALL =====");
-
-        contratService.findAll().forEach(System.out::println);
 
         assertTrue(
                 contratService.findAll().stream()
                         .anyMatch(c -> c.getId().equals(id))
         );
 
-        // 3. FIND BY ID : rechercher le contrat
+        // 3. FIND BY ID
         System.out.println("===== FIND BY ID =====");
 
-        Contrat contratRecupere = contratService.findById(id);
+        ContratDTO contratRecupere = contratService.findById(id);
 
         assertNotNull(contratRecupere);
         assertEquals(id, contratRecupere.getId());
@@ -62,25 +60,23 @@ class ContratServiceTest {
                         .compareTo(contratRecupere.getMontantTotal())
         );
         assertEquals(LocalDate.now(), contratRecupere.getDateSignature());
-        assertTrue(contratRecupere.isValide());
+        assertTrue(contratRecupere.getValide());
 
-        System.out.println(contratRecupere);
-/*
-        // 4. DELETE : supprimer le contrat
-        System.out.println("===== DELETE =====");
+        // 4. UPDATE
+        System.out.println("===== UPDATE =====");
 
-        contratService.deleteById(id);
+        contratRecupere.setMontantTotal(new BigDecimal("200.00"));
+        contratRecupere.setValide(false);
 
-        System.out.println("Contrat supprimé : " + id);*/
+        ContratDTO contratModifie = contratService.update(id, contratRecupere);
 
-    // 5. Vérifier que le contrat n'existe plus
-     /*   assertFalse(
-                contratService.findAll().stream()
-                        .anyMatch(c -> c.getId().equals(id))
+        assertEquals(
+                0,
+                new BigDecimal("200.00")
+                        .compareTo(contratModifie.getMontantTotal())
         );
+        assertFalse(contratModifie.getValide());
 
-        System.out.println(
-                "Vérification : le contrat a été supprimé avec succès."
-        );*/
-/*}*/
+        System.out.println("Contrat modifié : " + contratModifie);
+    }
 }

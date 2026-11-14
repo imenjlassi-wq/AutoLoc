@@ -1,61 +1,110 @@
+
 package tn.esprit.autoloc.service.impl;
-
-
 
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import tn.esprit.autoloc.domain.Paiement;
+import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.repository.IPaiementRepository;
+import tn.esprit.autoloc.repository.IContratRepository;
 import tn.esprit.autoloc.service.IPaiementService;
+import tn.esprit.autoloc.web.dto.PaiementDTO;
+import tn.esprit.autoloc.web.mapper.PaiementMapper;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PaiementServiceImpl implements IPaiementService {
 
-    @Autowired
-    private IPaiementRepository paiementRepository;
+    private final IPaiementRepository paiementRepository;
+    private final IContratRepository contratRepository;
+    private final PaiementMapper paiementMapper;
 
     @Override
-    public Paiement create(Paiement paiement) {
-        if (paiement.getId() != null) {
+    public PaiementDTO create(PaiementDTO dto) {
+
+        if (dto.getId() != null) {
             throw new IllegalArgumentException(
                     "Un nouveau paiement ne doit pas avoir d'identifiant");
         }
-        return paiementRepository.save(paiement);
+
+        if (dto.getContratId() == null) {
+            throw new IllegalArgumentException(
+                    "Un paiement doit être associé à un contrat");
+        }
+
+        Contrat contrat = contratRepository.findById(dto.getContratId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Contrat", dto.getContratId()));
+
+        Paiement paiement = paiementMapper.toEntity(dto);
+        paiement.setContrat(contrat);
+
+        Paiement saved = paiementRepository.save(paiement);
+
+        return paiementMapper.toDto(saved);
     }
 
     @Override
-    public Paiement findById(Long id) {
-        return paiementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Paiement", id));
+    @Transactional(readOnly = true)
+    public PaiementDTO findById(Long id) {
+
+        Paiement paiement = paiementRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Paiement", id));
+
+        return paiementMapper.toDto(paiement);
     }
 
     @Override
-    public List<Paiement> findAll() {
-        return paiementRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<PaiementDTO> findAll() {
+
+        return paiementRepository.findAll()
+                .stream()
+                .map(paiementMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Paiement update(Long id, Paiement paiement) {
-        Paiement existant = findById(id);
+    public PaiementDTO update(Long id, PaiementDTO dto) {
 
-        existant.setMontant(paiement.getMontant());
-        existant.setDatePaiement(paiement.getDatePaiement());
-        existant.setModePaiement(paiement.getModePaiement());
+        Paiement existant = paiementRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Paiement", id));
 
-        return paiementRepository.save(existant);
+        existant.setMontant(dto.getMontant());
+        existant.setDatePaiement(dto.getDatePaiement());
+        existant.setModePaiement(
+                paiementMapper.toEntity(dto).getModePaiement()
+        );
+
+        if (dto.getContratId() != null) {
+            Contrat contrat = contratRepository.findById(dto.getContratId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException("Contrat", dto.getContratId()));
+
+            existant.setContrat(contrat);
+        }
+
+        Paiement updated = paiementRepository.save(existant);
+
+        return paiementMapper.toDto(updated);
     }
 
     @Override
     public void deleteById(Long id) {
+
         if (!paiementRepository.existsById(id)) {
             throw new ResourceNotFoundException("Paiement", id);
         }
+
         paiementRepository.deleteById(id);
     }
 }

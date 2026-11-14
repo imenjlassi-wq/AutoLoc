@@ -1,21 +1,16 @@
-
 package tn.esprit.autoloc;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import tn.esprit.autoloc.domain.Client;
-import tn.esprit.autoloc.domain.Contrat;
-import tn.esprit.autoloc.domain.Reservation;
-import tn.esprit.autoloc.domain.Vehicule;
-import tn.esprit.autoloc.domain.enums.StatutReservation;
 import tn.esprit.autoloc.repository.IClientRepository;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
 import tn.esprit.autoloc.service.IReservationService;
+import tn.esprit.autoloc.web.dto.ReservationRequestDTO;
+import tn.esprit.autoloc.web.dto.ReservationResponseDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,71 +30,57 @@ class ReservationServiceTest {
     void testCreateFindAllFindByIdAndDelete() {
 
         // 1. Récupérer un client existant
-        Client client = clientRepository.findAll()
+        Long clientId = clientRepository.findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(
                         "Aucun client trouvé. Crée un client d'abord."
-                ));
+                ))
+                .getId();
 
         // 2. Récupérer un véhicule existant
-        Vehicule vehicule = vehiculeRepository.findAll()
+        Long vehiculeId = vehiculeRepository.findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(
                         "Aucun véhicule trouvé. Crée un véhicule d'abord."
-                ));
+                ))
+                .getIdVehicule();
 
-        // 3. Créer le contrat
-        Contrat contrat = new Contrat();
-        contrat.setDateSignature(LocalDate.now());
-        contrat.setMontantTotal(new BigDecimal("750.00"));
-        contrat.setValide(true);
+        // 3. Préparer le DTO
+        ReservationRequestDTO dto = new ReservationRequestDTO();
+        dto.setClientId(clientId);
+        dto.setVehiculeId(vehiculeId);
+        dto.setDateDebut(LocalDate.now());
+        dto.setDateFin(LocalDate.now().plusDays(3));
 
-        // 4. Créer la réservation et associer ses relations
-        Reservation reservation = new Reservation();
-        reservation.setDateDebut(LocalDate.now());
-        reservation.setDateFin(LocalDate.now().plusDays(3));
-        reservation.setStatut(StatutReservation.values()[0]);
-        reservation.setClient(client);
-        reservation.setVehicule(vehicule);
-        reservation.setContrat(contrat);
+        // 4. CREATE
+        ReservationResponseDTO reservationCreee =
+                reservationService.create(dto);
 
-        // 5. CREATE
-        Reservation reservationCreee =
-                reservationService.create(reservation);
-
+        assertNotNull(reservationCreee);
         assertNotNull(reservationCreee.getId());
-        assertNotNull(reservationCreee.getContrat());
-        assertNotNull(reservationCreee.getContrat().getId());
+        assertEquals(clientId, reservationCreee.getClientId());
+        assertEquals(vehiculeId, reservationCreee.getVehiculeId());
+        assertNotNull(reservationCreee.getTarifEstime());
 
         Long reservationId = reservationCreee.getId();
-        Long contratId = reservationCreee.getContrat().getId();
-        Long clientId = client.getId();
-        Long vehiculeId = vehicule.getId();
-
-        assertEquals(clientId, reservationCreee.getClient().getId());
-        assertEquals(vehiculeId, reservationCreee.getVehicule().getId());
 
         System.out.println("CREATE : Réservation ajoutée");
         System.out.println("ID réservation : " + reservationId);
-        System.out.println("ID contrat : " + contratId);
-        System.out.println("ID client : " + clientId);
-        System.out.println("ID véhicule : " + vehiculeId);
 
-        // 6. FIND BY ID
-        Reservation reservationTrouvee =
+        // 5. FIND BY ID
+        ReservationResponseDTO reservationTrouvee =
                 reservationService.findById(reservationId);
 
         assertNotNull(reservationTrouvee);
         assertEquals(reservationId, reservationTrouvee.getId());
-        assertNotNull(reservationTrouvee.getContrat());
-        assertEquals(contratId, reservationTrouvee.getContrat().getId());
+        assertEquals(clientId, reservationTrouvee.getClientId());
 
         System.out.println("FIND BY ID : réservation "
                 + reservationTrouvee.getId());
 
-        // 7. FIND ALL
+        // 6. FIND ALL
         var reservations = reservationService.findAll();
 
         assertTrue(reservations.stream()
@@ -108,12 +89,12 @@ class ReservationServiceTest {
         System.out.println("FIND ALL : "
                 + reservations.size() + " réservation(s)");
 
-       /* // 8. DELETE
+        // 7. DELETE
         reservationService.deleteById(reservationId);
 
         assertFalse(reservationService.findAll().stream()
                 .anyMatch(r -> r.getId().equals(reservationId)));
 
-        System.out.println("DELETE : Réservation supprimée");*/
+        System.out.println("DELETE : Réservation supprimée");
     }
 }

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.service.IClientService;
+import tn.esprit.autoloc.web.dto.ClientDTO;
 
 import java.time.LocalDate;
 
@@ -21,17 +21,17 @@ class ClientServiceTest {
     @Test
     void testClientService() {
 
-        // 1. CREATE : créer un client
-        Client client = new Client();
+        // 1. CREATE
+        ClientDTO client = new ClientDTO();
 
         client.setNom("Jlassi");
         client.setPrenom("Imen");
-        client.setEmail("jlassiimen1310@gmail.com");
+        client.setEmail("imen.test." + System.currentTimeMillis() + "@gmail.com");
         client.setTelephone("92252456");
         client.setNumPermis("PERMIS12345");
         client.setDateInscription(LocalDate.now());
 
-        Client clientEnregistre = clientService.create(client);
+        ClientDTO clientEnregistre = clientService.create(client);
 
         assertNotNull(clientEnregistre);
         assertNotNull(clientEnregistre.getId());
@@ -41,42 +41,33 @@ class ClientServiceTest {
         System.out.println("===== CREATE =====");
         System.out.println(clientEnregistre);
 
-        // 2. READ ALL : afficher tous les clients
+        // 2. FIND ALL
         System.out.println("===== FIND ALL =====");
-        clientService.findAll().forEach(System.out::println);
 
         assertTrue(
                 clientService.findAll().stream()
                         .anyMatch(c -> c.getId().equals(id))
         );
 
-        // 3. FIND BY ID : rechercher le client
+        // 3. FIND BY ID
         System.out.println("===== FIND BY ID =====");
 
-        Client clientRecupere = clientService.findById(id);
+        ClientDTO clientRecupere = clientService.findById(id);
 
         assertNotNull(clientRecupere);
         assertEquals(id, clientRecupere.getId());
         assertEquals("Jlassi", clientRecupere.getNom());
         assertEquals("PERMIS12345", clientRecupere.getNumPermis());
 
-        System.out.println(clientRecupere);
-/*
-        // 4. DELETE : supprimer le client
-        System.out.println("===== DELETE =====");
+        // 4. UPDATE
+        System.out.println("===== UPDATE =====");
 
-        clientService.deleteById(id);
+        clientRecupere.setTelephone("55112233");
 
-        System.out.println("Client supprimé : " + id);
+        ClientDTO clientModifie = clientService.update(id, clientRecupere);
 
-        // 5. Vérifier que le client n'existe plus
-        assertFalse(
-                clientService.findAll().stream()
-                        .anyMatch(c -> c.getId().equals(id))
-        );
+        assertEquals("55112233", clientModifie.getTelephone());
 
-        System.out.println(
-                "Vérification : le client a été supprimé avec succès."
-        );*/
+        System.out.println("Client modifié : " + clientModifie);
     }
 }
